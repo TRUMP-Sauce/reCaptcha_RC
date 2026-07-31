@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API 测试 - Natawayk Verify</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; background: #F1F5F9; color: #1E293B; padding: 40px 20px; }
+        .container { max-width: 500px; margin: 0 auto; }
+        .card { background: #fff; border-radius: 12px; padding: 30px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin-bottom: 20px; }
+        .card h2 { font-size: 16px; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid #E2E8F0; }
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; color: #64748B; margin-bottom: 4px; }
+        .form-group input, .form-group select { width: 100%; padding: 9px 12px; border: 1.5px solid #E2E8F0; border-radius: 6px; font-size: 14px; }
+        .btn { padding: 10px 20px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .btn-primary { background: #4F46E5; color: #fff; }
+        .btn-secondary { background: #E2E8F0; color: #475569; }
+        .btn-primary:hover { background: #4338CA; }
+        .btn-secondary:hover { background: #CBD5E1; }
+        .actions { display: flex; gap: 10px; margin-top: 12px; }
+        .msg { margin-top: 10px; padding: 10px; border-radius: 6px; font-size: 13px; }
+        .msg.success { background: #ECFDF5; color: #10B981; }
+        .msg.fail { background: #FEF2F2; color: #EF4444; }
+        .msg.info { background: #EFF6FF; color: #3B82F6; }
+        .captcha-box { display: flex; justify-content: center; margin: 16px 0; }
+        pre { background: #1E293B; color: #E2E8F0; padding: 12px; border-radius: 8px; font-size: 12px; overflow-x: auto; white-space: pre-wrap; word-break: break-all; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h2>API 规则测试</h2>
+            <div class="form-group">
+                <label>验证类型</label>
+                <select id="captchaType">
+                    <option value="slider">滑块拼图</option>
+                    <option value="click">点选定位</option>
+                    <option value="math">数学计算</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>难度</label>
+                <select id="captchaDifficulty">
+                    <option value="easy">简单</option>
+                    <option value="normal" selected>普通</option>
+                    <option value="hard">困难</option>
+                </select>
+            </div>
+
+            <div class="captcha-box" id="captchaContainer"></div>
+
+            <div class="actions">
+                <button class="btn btn-primary" id="verifyBtn">验证</button>
+                <button class="btn btn-secondary" id="refreshBtn">刷新验证码</button>
+            </div>
+            <div id="resultMsg" class="msg"></div>
+        </div>
+
+        <div class="card">
+            <h2>API 原始请求/响应</h2>
+            <pre id="apiOutput">等待操作...</pre>
+        </div>
+    </div>
+
+    <script src="js/captcha-sdk.js"></script>
+    <script>
+        let captcha = null;
+        let currentType = 'slider';
+        let currentDifficulty = 'normal';
+
+        function initCaptcha() {
+            currentType = document.getElementById('captchaType').value;
+            currentDifficulty = document.getElementById('captchaDifficulty').value;
+
+            if (captcha) {
+                captcha.destroy();
+            }
+
+            captcha = new NatawaykVerify({
+                container: '#captchaContainer',
+                type: currentType,
+                difficulty: currentDifficulty,
+                onSuccess: (token) => {
+                    document.getElementById('resultMsg').className = 'msg success';
+                    document.getElementById('resultMsg').textContent = '验证通过！Token: ' + token.substring(0, 20) + '...';
+                },
+                onFail: (err) => {
+                    document.getElementById('resultMsg').className = 'msg fail';
+                    document.getElementById('resultMsg').textContent = err || '验证失败';
+                }
+            });
+            captcha.render();
+            document.getElementById('apiOutput').textContent = '验证码已加载，类型: ' + currentType + ', 难度: ' + currentDifficulty;
+        }
+
+        // 切换类型/难度时重新初始化
+        document.getElementById('captchaType').addEventListener('change', initCaptcha);
+        document.getElementById('captchaDifficulty').addEventListener('change', initCaptcha);
+
+        // 验证按钮
+        document.getElementById('verifyBtn').addEventListener('click', async () => {
+            if (!captcha) return;
+            document.getElementById('apiOutput').textContent = '正在验证...';
+            const result = await captcha.verify();
+            document.getElementById('apiOutput').textContent = JSON.stringify(result, null, 2);
+            if (result.success) {
+                document.getElementById('resultMsg').className = 'msg success';
+                document.getElementById('resultMsg').textContent = '验证通过！';
+            } else {
+                document.getElementById('resultMsg').className = 'msg fail';
+                document.getElementById('resultMsg').textContent = result.message || '验证失败';
+            }
+        });
+
+        // 刷新按钮
+        document.getElementById('refreshBtn').addEventListener('click', async () => {
+            document.getElementById('resultMsg').className = 'msg';
+            document.getElementById('resultMsg').textContent = '';
+            document.getElementById('apiOutput').textContent = '正在刷新...';
+            if (captcha) {
+                await captcha.refresh();
+            } else {
+                initCaptcha();
+            }
+            document.getElementById('apiOutput').textContent = '验证码已刷新';
+        });
+
+        // 页面加载后初始化
+        initCaptcha();
+    </script>
+</body>
+</html>
