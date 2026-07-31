@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Natawayk Verify - 演示</title>
+    <title>HumanVerify - 演示</title>
     <link rel="icon" href="LOGO.png" type="image/png">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <div class="demo-container">
         <header class="demo-header">
-            <img src="LOGO.png" alt="Natawayk Verify" class="demo-logo">
-            <h1>Natawayk Verify</h1>
-            <p>Natawayk Verify - 演示页面</p>
+            <img src="LOGO.png" alt="HumanVerify" class="demo-logo">
+            <h1>HumanVerify</h1>
+            <p>HumanVerify - 演示页面</p>
             <div class="demo-links">
                 <a href="external-demo.html" class="demo-link">外部接入演示</a>
                 <span style="color:#CBD5E1;">|</span>
@@ -61,7 +61,7 @@
 
 &lt;script&gt;
 // 初始化验证码
-const captcha = new NatawaykVerify({
+const captcha = new HumanVerify({
     container: '#captcha-box',
     type: 'slider',
     difficulty: 'normal',
@@ -119,13 +119,13 @@ if ($result['code'] === 200) {
 
         function initCaptcha() {
             const difficulty = document.getElementById('difficultySelect').value;
-            captcha = new NatawaykVerify({
+            captcha = new HumanVerify({
                 container: '#captchaContainer',
                 type: currentType,
                 difficulty: difficulty,
                 onSuccess: (token) => {
                     document.getElementById('resultBox').innerHTML =
-                        '<div class="result-success">&#10003; Natawayk Verify 通过！<br><small>Token: ' + token.substring(0, 20) + '...</small></div>';
+                        '<div class="result-success">&#10003; HumanVerify 通过！<br><small>Token: ' + token.substring(0, 20) + '...</small></div>';
                 },
                 onFail: (errMsg) => {
                     document.getElementById('resultBox').innerHTML =

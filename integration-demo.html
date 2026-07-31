@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>第三方接入 - Natawayk Verify 演示</title>
+    <title>第三方接入 - HumanVerify 演示</title>
     <link rel="icon" href="LOGO.png" type="image/png">
     <link rel="stylesheet" href="css/style.css">
     <style>
@@ -89,7 +89,7 @@
 </head>
 <body>
     <div class="container">
-        <div class="demo-note">第三方网站集成 Natawayk Verify 验证演示</div>
+        <div class="demo-note">第三方网站集成 HumanVerify 验证演示</div>
 
         <!-- 表单 -->
         <div class="card">
@@ -131,7 +131,7 @@
 
 &lt;!-- 3. 初始化 --&gt;
 &lt;script&gt;
-const captcha = new NatawaykVerify({
+const captcha = new HumanVerify({
     container: '#captcha-box',
     type: 'slider',
     difficulty: 'normal',
@@ -149,7 +149,7 @@ captcha.render();
     <script src="js/captcha-sdk.js"></script>
     <script>
         // 初始化验证码
-        const captcha = new NatawaykVerify({
+        const captcha = new HumanVerify({
             container: '#captcha-box',
             type: 'slider',
             difficulty: 'normal',

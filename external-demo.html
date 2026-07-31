@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>外部网站 - 接入Natawayk Verify演示</title>
+    <title>外部网站 - 接入HumanVerify演示</title>
     <link rel="icon" href="LOGO.png" type="image/png">
     <link rel="stylesheet" href="css/style.css">
     <style>
@@ -38,7 +38,7 @@
         <div class="card">
             <h2>外部网站接入演示 <span class="badge badge-external">跨域集成</span></h2>
             <p style="font-size:13px;color:#64748B;margin-bottom:16px;">
-                此页面模拟第三方网站，通过跨域方式接入 Natawayk Verify 验证服务。
+                此页面模拟第三方网站，通过跨域方式接入 HumanVerify 验证服务。
             </p>
 
             <div class="flow-steps">
@@ -76,17 +76,17 @@
         </div>
     </div>
 
-    <!-- 从 Natawayk Verify 服务器加载 SDK -->
+    <!-- 从 HumanVerify 服务器加载 SDK -->
     <script src="js/captcha-sdk.js"></script>
     <script>
-        // ===== 配置 Natawayk Verify 服务器地址 =====
-        // 如果 Natawayk Verify 部署在其他域名，修改这里：
+        // ===== 配置 HumanVerify 服务器地址 =====
+        // 如果 HumanVerify 部署在其他域名，修改这里：
         const HV_SERVER = '';  // 例如: 'https://captcha.example.com'
 
         let captcha = null;
 
         // 初始化验证码
-        captcha = new NatawaykVerify({
+        captcha = new HumanVerify({
             container: '#captchaBox',
             type: 'slider',
             difficulty: 'normal',
@@ -112,7 +112,7 @@
             const resultDiv = document.getElementById('backendResult');
 
             if (!token) {
-                msg.textContent = '请先完成 Natawayk Verify 验证';
+                msg.textContent = '请先完成 HumanVerify 验证';
                 msg.className = 'msg msg-error';
                 await captcha.verify();
                 return;
