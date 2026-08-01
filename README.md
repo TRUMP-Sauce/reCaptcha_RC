@@ -378,7 +378,7 @@ Visit `admin.html` and log in with the default account to:
 
 ## License
 
-MIT License - feel free to use, modify, and distribute.
+GPL-3 License - feel free to use, modify, and distribute.
 
 ---
 
