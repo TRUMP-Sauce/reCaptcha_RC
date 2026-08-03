@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HumanVerify - 演示</title>
+    <link rel="icon" href="LOGO.png" type="image/png">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="demo-container">
+        <header class="demo-header">
+            <img src="LOGO.png" alt="HumanVerify" class="demo-logo">
+            <h1>HumanVerify</h1>
+            <p>HumanVerify - 演示页面</p>
+            <div class="demo-links">
+                <a href="external-demo.html" class="demo-link">外部接入演示</a>
+                <span style="color:#CBD5E1;">|</span>
+                <a href="admin-login.html" class="demo-link">后台管理</a>
+            </div>
+        </header>
+
+        <div class="demo-content">
+            <!-- 类型选择 -->
+            <div class="demo-section">
+                <h2>选择验证类型</h2>
+                <div class="demo-type-tabs">
+                    <button class="type-tab active" data-type="slider">滑块拼图</button>
+                    <button class="type-tab" data-type="click">点选定位</button>
+                    <button class="type-tab" data-type="math">数学计算</button>
+                </div>
+                <div class="demo-difficulty">
+                    <label>难度：</label>
+                    <select id="difficultySelect">
+                        <option value="easy">简单</option>
+                        <option value="normal" selected>普通</option>
+                        <option value="hard">困难</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- 验证码展示区 -->
+            <div class="demo-section">
+                <h2>验证码</h2>
+                <div id="captchaContainer" class="captcha-wrapper"></div>
+                <div class="demo-actions">
+                    <button class="btn btn-primary" id="verifyBtn">验证</button>
+                    <button class="btn btn-secondary" id="refreshBtn">刷新验证码</button>
+                </div>
+                <div id="resultBox" class="result-box"></div>
+            </div>
+
+            <!-- 接入代码 -->
+            <div class="demo-section">
+                <h2>第三方接入代码</h2>
+                <div class="code-block">
+                    <pre><code>&lt;!-- 引入 CSS 和 SDK --&gt;
+&lt;link rel="stylesheet" href="css/style.css"&gt;
+&lt;script src="js/captcha-sdk.js"&gt;&lt;/script&gt;
+&lt;div id="captcha-box"&gt;&lt;/div&gt;
+
+&lt;script&gt;
+// 初始化验证码
+const captcha = new HumanVerify({
+    container: '#captcha-box',
+    type: 'slider',
+    difficulty: 'normal',
+    onSuccess: (token) =&gt; {
+        console.log('验证通过, token:', token);
+        // 将 token 随表单一起提交
+        document.getElementById('verify_token').value = token;
+    }
+});
+captcha.render();
+
+// 提交表单时验证
+document.getElementById('myForm').addEventListener('submit', async (e) =&gt; {
+    e.preventDefault();
+    const result = await captcha.verify();
+    if (result.success) {
+        // 提交表单...
+    }
+});
+&lt;/script&gt;</code></pre>
+                </div>
+            </div>
+
+            <!-- 后端 API 验证 -->
+            <div class="demo-section">
+                <h2>后端 API 验证</h2>
+                <div class="code-block">
+                    <pre><code>// PHP 后端验证示例
+$token = $_POST['verify_token'];
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, 'https://your-server/api/verify.php');
+curl_setopt($ch, CURLOPT_POST, true);
+curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
+    'session_id' => $token
+]));
+curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+$response = curl_exec($ch);
+$result = json_decode($response, true);
+
+if ($result['code'] === 200) {
+    // 验证通过，处理业务逻辑
+} else {
+    // 验证失败
+}</code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/captcha-sdk.js"></script>
+    <script>
+        let captcha = null;
+        let currentType = 'slider';
+
+        function initCaptcha() {
+            const difficulty = document.getElementById('difficultySelect').value;
+            captcha = new HumanVerify({
+                container: '#captchaContainer',
+                type: currentType,
+                difficulty: difficulty,
+                onSuccess: (token) => {
+                    document.getElementById('resultBox').innerHTML =
+                        '<div class="result-success">&#10003; HumanVerify 通过！<br><small>Token: ' + token.substring(0, 20) + '...</small></div>';
+                },
+                onFail: (errMsg) => {
+                    document.getElementById('resultBox').innerHTML =
+                        '<div class="result-fail">&#10007; ' + (errMsg || '验证失败，请重试') + '</div>';
+                }
+            });
+            captcha.render();
+        }
+
+        // 类型切换
+        document.querySelectorAll('.type-tab').forEach(tab => {
+            tab.addEventListener('click', function () {
+                document.querySelectorAll('.type-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                currentType = this.dataset.type;
+                document.getElementById('resultBox').innerHTML = '';
+                initCaptcha();
+            });
+        });
+
+        // 难度切换
+        document.getElementById('difficultySelect').addEventListener('change', () => {
+            document.getElementById('resultBox').innerHTML = '';
+            initCaptcha();
+        });
+
+        // 验证按钮
+        document.getElementById('verifyBtn').addEventListener('click', async () => {
+            if (!captcha) return;
+            const result = await captcha.verify();
+        });
+
+        // 刷新按钮
+        document.getElementById('refreshBtn').addEventListener('click', async () => {
+            document.getElementById('resultBox').innerHTML = '';
+            if (captcha) {
+                await captcha.refresh();
+            }
+        });
+
+        // 初始加载
+        initCaptcha();
+    </script>
+</body>
+</html>
